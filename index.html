@@ -23,27 +23,15 @@
         /* --- شاشة الترحيب --- */
         #welcome-screen {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(135deg, var(--primary) 0%, #34495e 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            color: white;
-            text-align: center;
+            display: flex; justify-content: center; align-items: center;
+            z-index: 2000; color: white; text-align: center;
         }
 
         .welcome-box {
-            background: white;
-            color: var(--primary);
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-            max-width: 500px;
-            width: 90%;
+            background: white; color: var(--primary); padding: 40px; border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3); max-width: 500px; width: 90%;
         }
 
         .welcome-box img { max-width: 120px; margin-bottom: 20px; }
@@ -51,136 +39,79 @@
         .welcome-box p { font-size: 18px; margin-bottom: 30px; }
 
         .start-btn {
-            background: var(--accent);
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            border-radius: 50px;
-            cursor: pointer;
+            background: var(--accent); color: white; border: none; padding: 15px 40px;
+            font-size: 1.2rem; font-weight: bold; border-radius: 50px; cursor: pointer;
             transition: 0.3s;
         }
 
-        .start-btn:hover { background: #219150; transform: scale(1.05); }
+        /* --- نافذة كلمة السر --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 10000;
+            justify-content: center; align-items: center;
+        }
+
+        .pw-card {
+            background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 400px;
+            text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .pw-input {
+            width: 85%; padding: 15px; font-size: 1.2rem; text-align: center;
+            border: 3px solid #ddd; border-radius: 12px; margin-bottom: 20px; outline: none;
+            transition: 0.3s;
+        }
+
+        .pw-input.error { border-color: var(--error) !important; box-shadow: 0 0 10px rgba(231, 76, 60, 0.3); animation: shake 0.4s; }
+        .pw-input.success { border-color: var(--accent) !important; box-shadow: 0 0 10px rgba(39, 174, 96, 0.3); }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .pw-btn { padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin: 5px; }
+        .confirm-btn { background: var(--accent); color: white; }
+        .cancel-btn { background: #95a5a6; color: white; }
 
         /* --- إخفاء الامتحان في البداية --- */
         #exam-wrapper { display: none; }
 
-        /* --- باقي التنسيقات الأصلية --- */
         .timer-container {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background: white;
-            padding: 10px 20px;
-            border-radius: 30px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            z-index: 1001;
-            border: 2px solid var(--primary);
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            position: fixed; top: 20px; left: 20px; background: white; padding: 10px 20px;
+            border-radius: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); z-index: 1001;
+            border: 2px solid var(--primary); font-weight: bold; display: flex; align-items: center; gap: 10px;
         }
         #timer { font-size: 1.2rem; color: var(--primary); }
         .timer-warning { border-color: var(--error) !important; animation: blink 1s infinite; }
-        .timer-warning #timer { color: var(--error); }
-
-        @keyframes blink { 50% { opacity: 0.7; } }
 
         .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: white;
-            padding: 35px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            position: relative;
+            max-width: 900px; margin: 0 auto; background: white; padding: 35px;
+            border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative;
             overflow: hidden;
         }
 
         .model-tag {
-            position: absolute;
-            top: 20px;
-            right: -35px;
-            background: linear-gradient(135deg, #2c3e50, #34495e);
-            color: white;
-            padding: 10px 45px;
-            transform: rotate(45deg);
-            font-weight: bold;
-            font-size: 0.9rem;
-            z-index: 10;
-            direction: rtl;
+            position: absolute; top: 20px; right: -35px; background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white; padding: 10px 45px; transform: rotate(45deg); font-weight: bold; font-size: 0.9rem; z-index: 10; direction: rtl;
         }
 
-        header {
-            text-align: center;
-            border-bottom: 3px solid var(--primary);
-            margin-bottom: 25px;
-            padding-bottom: 20px;
-        }
-
+        header { text-align: center; border-bottom: 3px solid var(--primary); margin-bottom: 25px; padding-bottom: 20px; }
         .school-logo { max-width: 110px; margin-bottom: 10px; }
         .school-name { font-size: 26px; font-weight: bold; color: var(--primary); direction: rtl; }
-        
-        .teacher-info {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            display: inline-block;
-            padding: 8px 25px;
-            border-radius: 50px;
-            margin-top: 10px;
-        }
-        
+        .teacher-info { background: #f8f9fa; border: 1px solid #e9ecef; display: inline-block; padding: 8px 25px; border-radius: 50px; margin-top: 10px; }
         .teacher-name { font-size: 1.1rem; color: #2c3e50; font-weight: bold; direction: rtl; }
         .exam-title { font-size: 22px; color: #c0392b; margin-top: 20px; font-weight: 800; }
 
-        .section-header {
-            background: var(--primary);
-            color: white;
-            padding: 14px 20px;
-            border-radius: 8px;
-            margin: 40px 0 20px;
-            font-size: 1.2rem;
-        }
+        .section-header { background: var(--primary); color: white; padding: 14px 20px; border-radius: 8px; margin: 40px 0 20px; font-size: 1.2rem; }
+        .passage-box { background: #fff; padding: 25px; border: 1px solid #e1e4e8; border-left: 6px solid var(--primary); line-height: 1.9; margin-bottom: 30px; font-size: 1.15rem; }
 
-        .passage-box {
-            background: #fff;
-            padding: 25px;
-            border: 1px solid #e1e4e8;
-            border-left: 6px solid var(--primary);
-            line-height: 1.9;
-            margin-bottom: 30px;
-            font-size: 1.15rem;
-        }
-
-        .question-block {
-            margin-bottom: 30px;
-            padding: 20px;
-            background: #fcfcfc;
-            border-radius: 10px;
-            border: 1px solid #f0f0f0;
-        }
-
+        .question-block { margin-bottom: 30px; padding: 20px; background: #fcfcfc; border-radius: 10px; border: 1px solid #f0f0f0; }
         .question-text { font-weight: 700; font-size: 1.1rem; margin-bottom: 18px; display: block; color: #2c3e50; }
         .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 
-        @media (max-width: 650px) { 
-            .options-grid { grid-template-columns: 1fr; }
-            .timer-container { top: auto; bottom: 20px; left: 50%; transform: translateX(-50%); }
-        }
-
-        .option-item {
-            display: flex;
-            align-items: center;
-            padding: 12px 18px;
-            border: 2px solid #edeff2;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
+        .option-item { display: flex; align-items: center; padding: 12px 18px; border: 2px solid #edeff2; border-radius: 10px; cursor: pointer; transition: 0.2s; }
         .option-item:hover { background: #f1f8ff; border-color: var(--primary); }
         input[type="radio"] { margin-right: 12px; transform: scale(1.3); }
 
@@ -188,35 +119,17 @@
         .is-wrong { background: #ffeef0 !important; border-color: #dc3545 !important; color: #721c24; }
 
         .result-sticky {
-            display: none;
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
-            background: #27ae60;
-            color: white;
-            padding: 15px 40px;
-            border-radius: 50px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            border: 2px solid white;
+            display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            z-index: 1000; background: #27ae60; color: white; padding: 15px 40px;
+            border-radius: 50px; font-size: 1.5rem; font-weight: bold; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border: 2px solid white;
         }
 
-        .submit-btn {
-            display: block;
-            width: 100%;
-            padding: 22px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 1.4rem;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 40px;
+        .submit-btn, .retake-btn {
+            display: block; width: 100%; padding: 22px; border: none; border-radius: 12px;
+            font-size: 1.4rem; font-weight: bold; cursor: pointer; margin-top: 40px; transition: 0.3s;
         }
+        .submit-btn { background: var(--primary); color: white; }
+        .retake-btn { background: #e67e22; color: white; display: none; }
         
         .disabled { pointer-events: none; opacity: 0.7; }
     </style>
@@ -237,6 +150,17 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="pwModal">
+    <div class="pw-card">
+        <h3 style="direction: rtl;">أدخل كلمة السر للإعادة</h3>
+        <input type="password" id="retakePassword" class="pw-input" placeholder="كلمة السر">
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            <button class="pw-btn confirm-btn" onclick="checkRetakePassword()">تأكيد</button>
+            <button class="pw-btn cancel-btn" onclick="closePwModal()">إلغاء</button>
+        </div>
+    </div>
+</div>
+
 <div id="exam-wrapper">
     <div class="timer-container" id="timerBox">
         <span>Time Left:</span>
@@ -245,13 +169,10 @@
 
     <div class="container">
         <div class="model-tag">النموذج الثالث</div>
-
         <header>
             <img src="https://i.ibb.co/dsF6pmMw/20170618225634.jpg" alt="Logo" class="school-logo">
             <div class="school-name">مدرسة الشهيد زهاء الدين الحمود الثانوية للبنين</div>
-            <div class="teacher-info">
-                <span class="teacher-name">إعداد الأستاذ: أسامة فودة</span>
-            </div>
+            <div class="teacher-info"><span class="teacher-name">إعداد الأستاذ: أسامة فودة</span></div>
             <div class="exam-title">Unit Seven Exam: English Language</div>
         </header>
 
@@ -267,6 +188,8 @@
             <div id="grammarQuestionsSection"></div>
             <button type="button" id="submitBtn" class="submit-btn" onclick="gradeQuiz()">Finish & Calculate Score</button>
         </form>
+
+        <button type="button" id="retakeBtn" class="retake-btn" onclick="openPwModal()">Retake Exam / إعادة الامتحان</button>
     </div>
 </div>
 
@@ -299,6 +222,7 @@
 
     function renderQuestions(data, containerId) {
         const container = document.getElementById(containerId);
+        container.innerHTML = "";
         data.forEach(item => {
             const div = document.createElement('div');
             div.className = 'question-block';
@@ -310,56 +234,43 @@
     let countdown;
     const EXAM_MINUTES = 30;
 
-    // دالة بدء الامتحان
     function startExam() {
         document.getElementById('welcome-screen').style.display = 'none';
         document.getElementById('exam-wrapper').style.display = 'block';
-        
         let endTime = localStorage.getItem('examEndTime');
         if (!endTime) {
             endTime = Date.now() + (EXAM_MINUTES * 60 * 1000);
             localStorage.setItem('examEndTime', endTime);
         }
-        
         runTimer(endTime);
     }
 
     function runTimer(endTime) {
         const timerDisplay = document.getElementById('timer');
         const timerBox = document.getElementById('timerBox');
-
+        clearInterval(countdown);
         countdown = setInterval(() => {
-            const now = Date.now();
-            const difference = endTime - now;
-
+            const difference = endTime - Date.now();
             if (difference <= 0) {
                 clearInterval(countdown);
                 timerDisplay.innerHTML = "00:00";
-                if (!localStorage.getItem('examFinished')) autoSubmit();
+                if (!localStorage.getItem('examFinished')) gradeQuiz();
                 return;
             }
-
             const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-            
             timerDisplay.innerHTML = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
             if (difference < 120000) timerBox.classList.add('timer-warning');
         }, 1000);
     }
 
-    function autoSubmit() {
-        alert("Time is up! Submitting your answers.");
-        gradeQuiz();
-    }
-
     function gradeQuiz() {
         clearInterval(countdown);
-        localStorage.setItem('examFinished', 'true');
         let score = 0;
         const allQuestions = [...readingData, ...grammarData];
-
         document.getElementById('quizForm').classList.add('disabled');
         document.getElementById('submitBtn').style.display = 'none';
+        document.getElementById('retakeBtn').style.display = 'block';
 
         allQuestions.forEach(item => {
             const selected = document.querySelector(`input[name="q${item.id}"]:checked`);
@@ -377,26 +288,68 @@
             }
         });
 
+        localStorage.setItem('examFinished', 'true');
+        localStorage.setItem('savedScore', score);
+        showScore(score);
+    }
+
+    function showScore(score) {
         const scoreDiv = document.getElementById('scoreDisplay');
         scoreDiv.style.display = 'block';
         scoreDiv.innerHTML = `Final Score: ${score} / 20`;
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    function openPwModal() { document.getElementById('pwModal').style.display = 'flex'; }
+    function closePwModal() { document.getElementById('pwModal').style.display = 'none'; }
+
+    function checkRetakePassword() {
+        const input = document.getElementById('retakePassword');
+        if (input.value === "unit7-3") {
+            input.classList.add('success');
+            setTimeout(() => {
+                // 1. مسح الذاكرة
+                localStorage.clear();
+                // 2. إخفاء النافذة ومحتوى الامتحان
+                closePwModal();
+                document.getElementById('exam-wrapper').style.display = 'none';
+                document.getElementById('scoreDisplay').style.display = 'none';
+                document.getElementById('quizForm').classList.remove('disabled');
+                document.getElementById('submitBtn').style.display = 'block';
+                document.getElementById('retakeBtn').style.display = 'none';
+                
+                // 3. تصفير الخيارات المختارة بصرياً
+                const radios = document.querySelectorAll('input[type="radio"]');
+                radios.forEach(r => r.checked = false);
+                const labels = document.querySelectorAll('.option-item');
+                labels.forEach(l => l.classList.remove('is-correct', 'is-wrong'));
+
+                // 4. إظهار الشاشة الترحيبية فوراً
+                document.getElementById('welcome-screen').style.display = 'flex';
+                input.classList.remove('success');
+                input.value = "";
+            }, 600);
+        } else {
+            input.classList.add('error');
+            setTimeout(() => {
+                input.classList.remove('error');
+                input.value = "";
+            }, 1000);
+        }
+    }
+
     window.onload = () => {
         renderQuestions(readingData, 'readingQuestionsSection');
         renderQuestions(grammarData, 'grammarQuestionsSection');
         
-        // إذا كان الطالب قد بدأ الامتحان مسبقاً، لا نظهر شاشة الترحيب
-        if (localStorage.getItem('examEndTime') && !localStorage.getItem('examFinished')) {
-            startExam();
-        } else if (localStorage.getItem('examFinished')) {
+        if (localStorage.getItem('examFinished') === 'true') {
             document.getElementById('welcome-screen').style.display = 'none';
             document.getElementById('exam-wrapper').style.display = 'block';
-            setTimeout(gradeQuiz, 300);
+            gradeQuiz();
+        } else if (localStorage.getItem('examEndTime')) {
+            startExam();
         }
     };
 </script>
-
 </body>
 </html>
