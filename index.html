@@ -278,7 +278,9 @@
 </div>
 
 <script>
-    // --- البيانات الأصلية للأسئلة بدون أي تغيير إطلاقاً ---
+    // --- رابط الإكسل الخاص بك ---
+    const SHEETDB_API_URL = 'https://sheetdb.io/api/v1/sa2f66q6ml1ek';
+
     const readingData = [
         { id: 1, q: "What prompted Tracy Warshal to pay for the stranger's items?", options: ["She knew the man personally.", "She saw the man forget his wallet.", "She was asked to pay by the shop staff.", "She wanted to advertise the charity she worked for."], ans: "B" },
         { id: 2, q: "What items did Tracy pay for?", options: ["Milk and other items.", "Only milk.", "Groceries worth $10,000.", "The man’s entire shopping cart."], ans: "A" },
@@ -316,7 +318,19 @@
         });
     }
 
-    // --- نظام التنقل اللحظي وكلمة السر الموحدة ---
+    // --- وظيفة الإرسال لـ SheetDB ---
+    async function sendToExcel(name, score, time) {
+        try {
+            await fetch(SHEETDB_API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    "data": [{ "الاسم الرباعي": name, "الدرجة": score, "وقت التسليم": time }]
+                })
+            });
+        } catch (e) { console.error("Error sending to sheet", e); }
+    }
+
     let currentAction = "";
     function hideAllScreens() {
         document.getElementById('roleSelectionScreen').style.display = 'none';
@@ -326,134 +340,70 @@
         document.getElementById('exam-wrapper').style.display = 'none';
     }
 
-    function goToStudentWelcome() {
-        hideAllScreens();
-        document.getElementById('welcome-screen').style.display = 'flex';
-    }
-
-    function openPwModal(action) {
-        currentAction = action;
-        document.getElementById('pwModalTitle').innerText = (action === 'teacher') ? "دخول الأستاذ" : "أدخل كلمة السر للإعادة";
-        document.getElementById('pwModal').style.display = 'flex';
-    }
-    
-    function closePwModal() { 
-        document.getElementById('pwModal').style.display = 'none'; 
-        document.getElementById('retakePassword').value = "";
-    }
+    function goToStudentWelcome() { hideAllScreens(); document.getElementById('welcome-screen').style.display = 'flex'; }
+    function openPwModal(action) { currentAction = action; document.getElementById('pwModalTitle').innerText = (action === 'teacher') ? "دخول الأستاذ" : "أدخل كلمة السر للإعادة"; document.getElementById('pwModal').style.display = 'flex'; }
+    function closePwModal() { document.getElementById('pwModal').style.display = 'none'; document.getElementById('retakePassword').value = ""; }
 
     function processPassword() {
         const input = document.getElementById('retakePassword');
-        // كلمة السر المطلوبة
         if (input.value === "unit7-3") {
             input.classList.add('success');
             setTimeout(() => {
                 closePwModal();
-                if(currentAction === 'teacher') {
-                    hideAllScreens();
-                    document.getElementById('teacherDashboard').style.display = 'block';
-                } else if(currentAction === 'retake') {
-                    // تصفير جلسة الطالب فقط ليعيد الامتحان (بدون مسح أرشيف النتائج)
-                    localStorage.removeItem('examEndTime');
-                    localStorage.removeItem('examFinished');
-                    localStorage.removeItem('savedScore');
-                    
-                    // إعادة ضبط شكل الواجهة
+                if(currentAction === 'teacher') { hideAllScreens(); document.getElementById('teacherDashboard').style.display = 'block'; }
+                else if(currentAction === 'retake') {
+                    localStorage.removeItem('examEndTime'); localStorage.removeItem('examFinished'); localStorage.removeItem('savedScore');
                     document.getElementById('scoreDisplay').style.display = 'none';
                     document.getElementById('quizForm').classList.remove('disabled');
                     document.getElementById('submitBtn').style.display = 'block';
                     document.getElementById('retakeBtn').style.display = 'none';
                     document.getElementById('studentName').value = "";
-                    
-                    const radios = document.querySelectorAll('input[type="radio"]');
-                    radios.forEach(r => r.checked = false);
-                    const labels = document.querySelectorAll('.option-item');
-                    labels.forEach(l => l.classList.remove('is-correct', 'is-wrong'));
-
-                    // العودة لشاشة اختيار الصفة (كما طلبت)
-                    hideAllScreens();
-                    document.getElementById('roleSelectionScreen').style.display = 'flex';
+                    document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+                    document.querySelectorAll('.option-item').forEach(l => l.classList.remove('is-correct', 'is-wrong'));
+                    hideAllScreens(); document.getElementById('roleSelectionScreen').style.display = 'flex';
                 }
                 input.classList.remove('success');
             }, 600);
-        } else {
-            input.classList.add('error');
-            setTimeout(() => {
-                input.classList.remove('error');
-                input.value = "";
-            }, 1000);
-        }
+        } else { input.classList.add('error'); setTimeout(() => { input.classList.remove('error'); input.value = ""; }, 1000); }
     }
 
-    function logoutToRoles() {
-        hideAllScreens();
-        document.getElementById('roleSelectionScreen').style.display = 'flex';
-    }
-
-    // --- إدارة النتائج للأستاذ ---
+    function logoutToRoles() { hideAllScreens(); document.getElementById('roleSelectionScreen').style.display = 'flex'; }
     function showResultsView() {
         const data = JSON.parse(localStorage.getItem('studentResults') || '[]');
         document.getElementById('resultsBody').innerHTML = data.map(r => `<tr><td>${r.name}</td><td>${r.score}/20</td><td>${r.time}</td></tr>`).join('');
         document.getElementById('teacherDashboard').style.display = 'none';
         document.getElementById('resultsPage').style.display = 'flex';
     }
-    function hideResultsView() { 
-        document.getElementById('resultsPage').style.display = 'none';
-        document.getElementById('teacherDashboard').style.display = 'block';
-    }
-    function resetStudentSessions() { 
-        localStorage.removeItem('examEndTime'); localStorage.removeItem('examFinished'); 
-        alert("تم تصفير جلسات الطلاب للبدء من جديد."); 
-    }
-    function clearResultsArchive() { 
-        if(confirm("هل أنت متأكد من مسح الأرشيف نهائياً؟")) { 
-            localStorage.removeItem('studentResults'); 
-            showResultsView(); 
-        } 
-    }
+    function hideResultsView() { document.getElementById('resultsPage').style.display = 'none'; document.getElementById('teacherDashboard').style.display = 'block'; }
+    function resetStudentSessions() { localStorage.removeItem('examEndTime'); localStorage.removeItem('examFinished'); alert("تم تصفير جلسات الطلاب."); }
+    function clearResultsArchive() { if(confirm("هل أنت متأكد؟")) { localStorage.removeItem('studentResults'); showResultsView(); } }
 
-    // --- منطق الامتحان الأصلي ---
     let countdown;
     const EXAM_MINUTES = 30;
 
     function startExam() {
         document.getElementById('welcome-screen').style.display = 'none';
         document.getElementById('exam-wrapper').style.display = 'block';
-        let endTime = localStorage.getItem('examEndTime');
-        if (!endTime) {
-            endTime = Date.now() + (EXAM_MINUTES * 60 * 1000);
-            localStorage.setItem('examEndTime', endTime);
-        }
+        let endTime = localStorage.getItem('examEndTime') || (Date.now() + (EXAM_MINUTES * 60 * 1000));
+        localStorage.setItem('examEndTime', endTime);
         runTimer(endTime);
     }
 
     function runTimer(endTime) {
         const timerDisplay = document.getElementById('timer');
-        const timerBox = document.getElementById('timerBox');
         clearInterval(countdown);
         countdown = setInterval(() => {
             const difference = endTime - Date.now();
-            if (difference <= 0) {
-                clearInterval(countdown);
-                timerDisplay.innerHTML = "00:00";
-                if (!localStorage.getItem('examFinished')) gradeQuiz(true); // Forced submission
-                return;
-            }
-            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+            if (difference <= 0) { clearInterval(countdown); timerDisplay.innerHTML = "00:00"; if (!localStorage.getItem('examFinished')) gradeQuiz(true); return; }
+            const minutes = Math.floor(difference / 60000);
+            const seconds = Math.floor((difference % 60000) / 1000);
             timerDisplay.innerHTML = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-            if (difference < 120000) timerBox.classList.add('timer-warning');
         }, 1000);
     }
 
     function gradeQuiz(isTimeUp = false) {
-        // التحقق من الاسم الرباعي
         const studentName = document.getElementById('studentName').value.trim();
-        if (!studentName && !localStorage.getItem('examFinished') && !isTimeUp) {
-            alert("عذراً، يجب عليك كتابة اسمك الرباعي قبل تسليم الامتحان!");
-            document.getElementById('studentName').focus();
-            return;
-        }
+        if (!studentName && !localStorage.getItem('examFinished') && !isTimeUp) { alert("أدخل الاسم أولاً!"); return; }
 
         clearInterval(countdown);
         let score = 0;
@@ -466,33 +416,22 @@
             const selected = document.querySelector(`input[name="q${item.id}"]:checked`);
             const correctLetter = item.ans;
             if (selected) {
-                if (selected.value === correctLetter) {
-                    score++;
-                    document.getElementById(`label-q${item.id}-${selected.value}`).classList.add('is-correct');
-                } else {
-                    document.getElementById(`label-q${item.id}-${selected.value}`).classList.add('is-wrong');
-                    document.getElementById(`label-q${item.id}-${correctLetter}`).classList.add('is-correct');
-                }
-            } else {
-                document.getElementById(`label-q${item.id}-${correctLetter}`).classList.add('is-correct');
-            }
+                if (selected.value === correctLetter) { score++; document.getElementById(`label-q${item.id}-${selected.value}`).classList.add('is-correct'); }
+                else { document.getElementById(`label-q${item.id}-${selected.value}`).classList.add('is-wrong'); document.getElementById(`label-q${item.id}-${correctLetter}`).classList.add('is-correct'); }
+            } else { document.getElementById(`label-q${item.id}-${correctLetter}`).classList.add('is-correct'); }
         });
 
-        // حفظ النتيجة في لوحة التحكم إذا لم تكن محفوظة مسبقاً
         if (!localStorage.getItem('examFinished')) {
-            const finalName = studentName || "طالب لم يكتب اسمه (انتهى الوقت)";
+            const timeStr = new Date().toLocaleString('ar-EG');
+            const finalName = studentName || "انتهى الوقت";
             const archive = JSON.parse(localStorage.getItem('studentResults') || '[]');
-            archive.push({
-                name: finalName,
-                score: score,
-                time: new Date().toLocaleString('ar-EG')
-            });
+            archive.push({ name: finalName, score: score, time: timeStr });
             localStorage.setItem('studentResults', JSON.stringify(archive));
-
             localStorage.setItem('examFinished', 'true');
             localStorage.setItem('savedScore', score);
+            // إرسال البيانات للإكسل
+            sendToExcel(finalName, score, timeStr);
         }
-        
         showScore(localStorage.getItem('savedScore'));
     }
 
@@ -506,20 +445,9 @@
     window.onload = () => {
         renderQuestions(readingData, 'readingQuestionsSection');
         renderQuestions(grammarData, 'grammarQuestionsSection');
-        
-        // توجيه المستخدم حسب الحالة المحفوظة
-        if (localStorage.getItem('examFinished') === 'true') {
-            hideAllScreens();
-            document.getElementById('exam-wrapper').style.display = 'block';
-            gradeQuiz();
-        } else if (localStorage.getItem('examEndTime')) {
-            hideAllScreens();
-            startExam();
-        } else {
-            // البداية دائماً من شاشة اختيار الصفة
-            hideAllScreens();
-            document.getElementById('roleSelectionScreen').style.display = 'flex';
-        }
+        if (localStorage.getItem('examFinished') === 'true') { hideAllScreens(); document.getElementById('exam-wrapper').style.display = 'block'; gradeQuiz(); }
+        else if (localStorage.getItem('examEndTime')) { hideAllScreens(); startExam(); }
+        else { hideAllScreens(); document.getElementById('roleSelectionScreen').style.display = 'flex'; }
     };
 </script>
 </body>
