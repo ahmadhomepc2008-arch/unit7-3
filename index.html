@@ -20,12 +20,51 @@
             color: #333;
         }
 
-        /* --- شاشة الترحيب --- */
+        /* --- شاشات المداخل (اختيار الصفة ولوحة التحكم) --- */
+        #roleSelectionScreen, #teacherDashboard, #resultsPage {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #f4f7f6 0%, #dcdde1 100%);
+            display: none; justify-content: center; align-items: center;
+            z-index: 20000; text-align: center; overflow-y: auto;
+        }
+
+        .custom-card {
+            background: white; padding: 40px; border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1); max-width: 450px; width: 90%;
+            border-top: 5px solid var(--primary); margin: auto;
+        }
+
+        .custom-card img { max-width: 100px; margin-bottom: 20px; }
+
+        .admin-btn {
+            width: 100%; padding: 18px; margin: 12px 0; border: none; border-radius: 12px;
+            font-size: 1.1rem; font-weight: 600; cursor: pointer; color: white;
+            transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn-results { background: linear-gradient(to right, #3498db, #2980b9); }
+        .btn-student { background: var(--accent); }
+        .btn-reset { background: linear-gradient(to right, #f39c12, #e67e22); }
+        .btn-clear { background: linear-gradient(to right, #e74c3c, #c0392b); }
+        .btn-logout { background: linear-gradient(to right, #7f8c8d, #34495e); }
+
+        .dashboard-container { max-width: 650px; margin: 40px auto; background: white; padding: 40px; border-radius: 25px; box-shadow: 0 15px 40px rgba(0,0,0,0.1); text-align: center; border-top: 8px solid var(--primary); }
+        
+        .results-container { max-width: 900px; width: 95%; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); direction: rtl; margin: auto;}
+        .results-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .results-table th { background: var(--primary); color: white; padding: 15px; }
+        .results-table td { padding: 12px; border-bottom: 1px solid #eee; text-align: center; font-weight: 500; }
+
+        /* حقل الاسم المدمج */
+        .name-box { background: #f0f4f8; padding: 20px; border-radius: 10px; margin-bottom: 25px; border-right: 5px solid var(--primary); direction: rtl; text-align: right; }
+        .name-box label { font-weight: bold; color: var(--primary); margin-bottom: 8px; display: block; }
+        .name-box input { width: 100%; padding: 12px; border: 2px solid #ccc; border-radius: 8px; font-size: 1rem; box-sizing: border-box; outline: none;}
+        .name-box input:focus { border-color: var(--primary); }
+
+        /* --- شاشة الترحيب الأصلية --- */
         #welcome-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(135deg, var(--primary) 0%, #34495e 100%);
-            display: flex; justify-content: center; align-items: center;
+            display: none; justify-content: center; align-items: center;
             z-index: 2000; color: white; text-align: center;
         }
 
@@ -40,14 +79,13 @@
 
         .start-btn {
             background: var(--accent); color: white; border: none; padding: 15px 40px;
-            font-size: 1.2rem; font-weight: bold; border-radius: 50px; cursor: pointer;
-            transition: 0.3s;
+            font-size: 1.2rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: 0.3s;
         }
 
         /* --- نافذة كلمة السر --- */
         .modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 10000;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 30000;
             justify-content: center; align-items: center;
         }
 
@@ -58,8 +96,7 @@
 
         .pw-input {
             width: 85%; padding: 15px; font-size: 1.2rem; text-align: center;
-            border: 3px solid #ddd; border-radius: 12px; margin-bottom: 20px; outline: none;
-            transition: 0.3s;
+            border: 3px solid #ddd; border-radius: 12px; margin-bottom: 20px; outline: none; transition: 0.3s;
         }
 
         .pw-input.error { border-color: var(--error) !important; box-shadow: 0 0 10px rgba(231, 76, 60, 0.3); animation: shake 0.4s; }
@@ -88,8 +125,7 @@
 
         .container {
             max-width: 900px; margin: 0 auto; background: white; padding: 35px;
-            border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative;
-            overflow: hidden;
+            border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative; overflow: hidden;
         }
 
         .model-tag {
@@ -136,6 +172,59 @@
 </head>
 <body>
 
+<div id="roleSelectionScreen">
+    <div class="custom-card">
+        <img src="https://i.ibb.co/dsF6pmMw/20170618225634.jpg" alt="Logo">
+        <h1 style="direction: rtl; color: var(--primary);">نظام الاختبارات الإلكتروني</h1>
+        <p style="direction: rtl;">يرجى اختيار صفتك للدخول</p>
+        <button class="admin-btn btn-results" onclick="openPwModal('teacher')">مدير النظام (الأستاذ)</button>
+        <button class="admin-btn btn-student" onclick="goToStudentWelcome()">الدخول كطالب</button>
+    </div>
+</div>
+
+<div id="teacherDashboard">
+    <div class="dashboard-container">
+        <img src="https://i.ibb.co/dsF6pmMw/20170618225634.jpg" alt="Logo" style="max-width: 90px; margin-bottom: 15px;">
+        <h2 style="direction: rtl;">لوحة التحكم - الأستاذ أسامة فودة</h2>
+        <div class="btn-group">
+            <button class="admin-btn btn-results" onclick="showResultsView()">📄 عرض نتائج الطلاب</button>
+            <button class="admin-btn btn-reset" onclick="resetStudentSessions()">🔄 تصفير جلسات الطلاب</button>
+            <button class="admin-btn btn-clear" onclick="clearResultsArchive()">🗑️ مسح أرشيف النتائج</button>
+            <button class="admin-btn btn-logout" onclick="logoutToRoles()">🚪 تسجيل الخروج</button>
+        </div>
+    </div>
+</div>
+
+<div id="resultsPage">
+    <div class="results-container">
+        <div style="display:flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary); padding-bottom: 10px;">
+            <h2 style="margin:0;">قائمة نتائج الطلاب</h2>
+            <button class="admin-btn btn-logout" style="width:auto; padding: 10px 20px; margin:0;" onclick="hideResultsView()">إغلاق الرجوع</button>
+        </div>
+        <table class="results-table">
+            <thead>
+                <tr>
+                    <th>الاسم الرباعي</th>
+                    <th>الدرجة</th>
+                    <th>وقت التسليم</th>
+                </tr>
+            </thead>
+            <tbody id="resultsBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal-overlay" id="pwModal">
+    <div class="pw-card">
+        <h3 id="pwModalTitle" style="direction: rtl;">أدخل كلمة السر</h3>
+        <input type="password" id="retakePassword" class="pw-input" placeholder="كلمة السر">
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            <button class="pw-btn confirm-btn" onclick="processPassword()">تأكيد</button>
+            <button class="pw-btn cancel-btn" onclick="closePwModal()">إلغاء</button>
+        </div>
+    </div>
+</div>
+
 <div id="welcome-screen">
     <div class="welcome-box">
         <img src="https://i.ibb.co/dsF6pmMw/20170618225634.jpg" alt="Logo">
@@ -147,17 +236,6 @@
         </ul>
         <br><br>
         <button class="start-btn" onclick="startExam()">ابدأ الامتحان الآن</button>
-    </div>
-</div>
-
-<div class="modal-overlay" id="pwModal">
-    <div class="pw-card">
-        <h3 style="direction: rtl;">أدخل كلمة السر للإعادة</h3>
-        <input type="password" id="retakePassword" class="pw-input" placeholder="كلمة السر">
-        <div style="display: flex; gap: 10px; justify-content: center;">
-            <button class="pw-btn confirm-btn" onclick="checkRetakePassword()">تأكيد</button>
-            <button class="pw-btn cancel-btn" onclick="closePwModal()">إلغاء</button>
-        </div>
     </div>
 </div>
 
@@ -179,6 +257,11 @@
         <div id="scoreDisplay" class="result-sticky"></div>
 
         <form id="quizForm">
+            <div class="name-box">
+                <label>الاسم الرباعي للطالب:</label>
+                <input type="text" id="studentName" required placeholder="أدخل اسمك الكامل هنا للمتابعة">
+            </div>
+
             <h2 class="section-header">Question One: Read the text, then answer the questions</h2>
             <div class="passage-box">
                 In 2015, Tracy Warshal was in the queue at a busy shop during the holiday season when the man in front of her realised he’d forgotten his wallet. Tracy paid for the stranger’s milk and other items, and after thanking her and asking her name, he was on his way. She thought no more of it until a month later when she was contacted by colleagues at the cancer charity where she worked. They told her that the man, who wished to remain anonymous, wanted to donate $10,000 to the foundation in her name. As she was wearing a T-shirt with the charity’s name on it at the shop, he was able to track her down. She told reporters, ‘I’m just so excited that one small gesture made a huge difference and impact on a lot of people. I hope it makes some people think twice about doing something small to somebody.’
@@ -186,14 +269,16 @@
             <div id="readingQuestionsSection"></div>
             <h2 class="section-header">Question Two: Reported Speech Mastery</h2>
             <div id="grammarQuestionsSection"></div>
+            
             <button type="button" id="submitBtn" class="submit-btn" onclick="gradeQuiz()">Finish & Calculate Score</button>
         </form>
 
-        <button type="button" id="retakeBtn" class="retake-btn" onclick="openPwModal()">Retake Exam / إعادة الامتحان</button>
+        <button type="button" id="retakeBtn" class="retake-btn" onclick="openPwModal('retake')">Retake Exam / إعادة الامتحان</button>
     </div>
 </div>
 
 <script>
+    // --- البيانات الأصلية للأسئلة بدون أي تغيير إطلاقاً ---
     const readingData = [
         { id: 1, q: "What prompted Tracy Warshal to pay for the stranger's items?", options: ["She knew the man personally.", "She saw the man forget his wallet.", "She was asked to pay by the shop staff.", "She wanted to advertise the charity she worked for."], ans: "B" },
         { id: 2, q: "What items did Tracy pay for?", options: ["Milk and other items.", "Only milk.", "Groceries worth $10,000.", "The man’s entire shopping cart."], ans: "A" },
@@ -231,6 +316,103 @@
         });
     }
 
+    // --- نظام التنقل اللحظي وكلمة السر الموحدة ---
+    let currentAction = "";
+    function hideAllScreens() {
+        document.getElementById('roleSelectionScreen').style.display = 'none';
+        document.getElementById('teacherDashboard').style.display = 'none';
+        document.getElementById('resultsPage').style.display = 'none';
+        document.getElementById('welcome-screen').style.display = 'none';
+        document.getElementById('exam-wrapper').style.display = 'none';
+    }
+
+    function goToStudentWelcome() {
+        hideAllScreens();
+        document.getElementById('welcome-screen').style.display = 'flex';
+    }
+
+    function openPwModal(action) {
+        currentAction = action;
+        document.getElementById('pwModalTitle').innerText = (action === 'teacher') ? "دخول الأستاذ" : "أدخل كلمة السر للإعادة";
+        document.getElementById('pwModal').style.display = 'flex';
+    }
+    
+    function closePwModal() { 
+        document.getElementById('pwModal').style.display = 'none'; 
+        document.getElementById('retakePassword').value = "";
+    }
+
+    function processPassword() {
+        const input = document.getElementById('retakePassword');
+        // كلمة السر المطلوبة
+        if (input.value === "unit7-3") {
+            input.classList.add('success');
+            setTimeout(() => {
+                closePwModal();
+                if(currentAction === 'teacher') {
+                    hideAllScreens();
+                    document.getElementById('teacherDashboard').style.display = 'block';
+                } else if(currentAction === 'retake') {
+                    // تصفير جلسة الطالب فقط ليعيد الامتحان (بدون مسح أرشيف النتائج)
+                    localStorage.removeItem('examEndTime');
+                    localStorage.removeItem('examFinished');
+                    localStorage.removeItem('savedScore');
+                    
+                    // إعادة ضبط شكل الواجهة
+                    document.getElementById('scoreDisplay').style.display = 'none';
+                    document.getElementById('quizForm').classList.remove('disabled');
+                    document.getElementById('submitBtn').style.display = 'block';
+                    document.getElementById('retakeBtn').style.display = 'none';
+                    document.getElementById('studentName').value = "";
+                    
+                    const radios = document.querySelectorAll('input[type="radio"]');
+                    radios.forEach(r => r.checked = false);
+                    const labels = document.querySelectorAll('.option-item');
+                    labels.forEach(l => l.classList.remove('is-correct', 'is-wrong'));
+
+                    // العودة لشاشة اختيار الصفة (كما طلبت)
+                    hideAllScreens();
+                    document.getElementById('roleSelectionScreen').style.display = 'flex';
+                }
+                input.classList.remove('success');
+            }, 600);
+        } else {
+            input.classList.add('error');
+            setTimeout(() => {
+                input.classList.remove('error');
+                input.value = "";
+            }, 1000);
+        }
+    }
+
+    function logoutToRoles() {
+        hideAllScreens();
+        document.getElementById('roleSelectionScreen').style.display = 'flex';
+    }
+
+    // --- إدارة النتائج للأستاذ ---
+    function showResultsView() {
+        const data = JSON.parse(localStorage.getItem('studentResults') || '[]');
+        document.getElementById('resultsBody').innerHTML = data.map(r => `<tr><td>${r.name}</td><td>${r.score}/20</td><td>${r.time}</td></tr>`).join('');
+        document.getElementById('teacherDashboard').style.display = 'none';
+        document.getElementById('resultsPage').style.display = 'flex';
+    }
+    function hideResultsView() { 
+        document.getElementById('resultsPage').style.display = 'none';
+        document.getElementById('teacherDashboard').style.display = 'block';
+    }
+    function resetStudentSessions() { 
+        localStorage.removeItem('examEndTime'); localStorage.removeItem('examFinished'); 
+        alert("تم تصفير جلسات الطلاب للبدء من جديد."); 
+    }
+    function clearResultsArchive() { 
+        if(confirm("هل أنت متأكد من مسح الأرشيف نهائياً؟")) { 
+            localStorage.removeItem('studentResults'); 
+            showResultsView(); 
+        } 
+    }
+
+    // --- منطق الامتحان الأصلي ---
     let countdown;
     const EXAM_MINUTES = 30;
 
@@ -254,7 +436,7 @@
             if (difference <= 0) {
                 clearInterval(countdown);
                 timerDisplay.innerHTML = "00:00";
-                if (!localStorage.getItem('examFinished')) gradeQuiz();
+                if (!localStorage.getItem('examFinished')) gradeQuiz(true); // Forced submission
                 return;
             }
             const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
@@ -264,7 +446,15 @@
         }, 1000);
     }
 
-    function gradeQuiz() {
+    function gradeQuiz(isTimeUp = false) {
+        // التحقق من الاسم الرباعي
+        const studentName = document.getElementById('studentName').value.trim();
+        if (!studentName && !localStorage.getItem('examFinished') && !isTimeUp) {
+            alert("عذراً، يجب عليك كتابة اسمك الرباعي قبل تسليم الامتحان!");
+            document.getElementById('studentName').focus();
+            return;
+        }
+
         clearInterval(countdown);
         let score = 0;
         const allQuestions = [...readingData, ...grammarData];
@@ -288,9 +478,22 @@
             }
         });
 
-        localStorage.setItem('examFinished', 'true');
-        localStorage.setItem('savedScore', score);
-        showScore(score);
+        // حفظ النتيجة في لوحة التحكم إذا لم تكن محفوظة مسبقاً
+        if (!localStorage.getItem('examFinished')) {
+            const finalName = studentName || "طالب لم يكتب اسمه (انتهى الوقت)";
+            const archive = JSON.parse(localStorage.getItem('studentResults') || '[]');
+            archive.push({
+                name: finalName,
+                score: score,
+                time: new Date().toLocaleString('ar-EG')
+            });
+            localStorage.setItem('studentResults', JSON.stringify(archive));
+
+            localStorage.setItem('examFinished', 'true');
+            localStorage.setItem('savedScore', score);
+        }
+        
+        showScore(localStorage.getItem('savedScore'));
     }
 
     function showScore(score) {
@@ -300,54 +503,22 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function openPwModal() { document.getElementById('pwModal').style.display = 'flex'; }
-    function closePwModal() { document.getElementById('pwModal').style.display = 'none'; }
-
-    function checkRetakePassword() {
-        const input = document.getElementById('retakePassword');
-        if (input.value === "unit7-3") {
-            input.classList.add('success');
-            setTimeout(() => {
-                // 1. مسح الذاكرة
-                localStorage.clear();
-                // 2. إخفاء النافذة ومحتوى الامتحان
-                closePwModal();
-                document.getElementById('exam-wrapper').style.display = 'none';
-                document.getElementById('scoreDisplay').style.display = 'none';
-                document.getElementById('quizForm').classList.remove('disabled');
-                document.getElementById('submitBtn').style.display = 'block';
-                document.getElementById('retakeBtn').style.display = 'none';
-                
-                // 3. تصفير الخيارات المختارة بصرياً
-                const radios = document.querySelectorAll('input[type="radio"]');
-                radios.forEach(r => r.checked = false);
-                const labels = document.querySelectorAll('.option-item');
-                labels.forEach(l => l.classList.remove('is-correct', 'is-wrong'));
-
-                // 4. إظهار الشاشة الترحيبية فوراً
-                document.getElementById('welcome-screen').style.display = 'flex';
-                input.classList.remove('success');
-                input.value = "";
-            }, 600);
-        } else {
-            input.classList.add('error');
-            setTimeout(() => {
-                input.classList.remove('error');
-                input.value = "";
-            }, 1000);
-        }
-    }
-
     window.onload = () => {
         renderQuestions(readingData, 'readingQuestionsSection');
         renderQuestions(grammarData, 'grammarQuestionsSection');
         
+        // توجيه المستخدم حسب الحالة المحفوظة
         if (localStorage.getItem('examFinished') === 'true') {
-            document.getElementById('welcome-screen').style.display = 'none';
+            hideAllScreens();
             document.getElementById('exam-wrapper').style.display = 'block';
             gradeQuiz();
         } else if (localStorage.getItem('examEndTime')) {
+            hideAllScreens();
             startExam();
+        } else {
+            // البداية دائماً من شاشة اختيار الصفة
+            hideAllScreens();
+            document.getElementById('roleSelectionScreen').style.display = 'flex';
         }
     };
 </script>
