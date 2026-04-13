@@ -1,454 +1,92 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>English Exam - Mr. Osama Foudeh</title>
-    <style>
-        :root {
-            --primary: #2c3e50;
-            --accent: #27ae60;
-            --error: #e74c3c;
-            --bg: #f4f7f6;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تم إغلاق الصفحة</title>
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
-            margin: 0;
-            padding: 20px;
-            color: #333;
-        }
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Tajawal", sans-serif;
+    background: linear-gradient(-45deg, #1e1e2f, #2c3e50, #34495e, #1e1e2f);
+    background-size: 400% 400%;
+    animation: gradientBG 10s ease infinite;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
 
-        /* --- شاشات المداخل (اختيار الصفة ولوحة التحكم) --- */
-        #roleSelectionScreen, #teacherDashboard, #resultsPage {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, #f4f7f6 0%, #dcdde1 100%);
-            display: none; justify-content: center; align-items: center;
-            z-index: 20000; text-align: center; overflow-y: auto;
-        }
+@keyframes gradientBG {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
+}
 
-        .custom-card {
-            background: white; padding: 40px; border-radius: 20px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.1); max-width: 450px; width: 90%;
-            border-top: 5px solid var(--primary); margin: auto;
-        }
+.container {
+    text-align: center;
+    background: rgba(0,0,0,0.5);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
 
-        .custom-card img { max-width: 100px; margin-bottom: 20px; }
+h1 {
+    font-size: 28px;
+    margin-bottom: 20px;
+}
 
-        .admin-btn {
-            width: 100%; padding: 18px; margin: 12px 0; border: none; border-radius: 12px;
-            font-size: 1.1rem; font-weight: 600; cursor: pointer; color: white;
-            transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px;
-        }
-        .btn-results { background: linear-gradient(to right, #3498db, #2980b9); }
-        .btn-student { background: var(--accent); }
-        .btn-reset { background: linear-gradient(to right, #f39c12, #e67e22); }
-        .btn-clear { background: linear-gradient(to right, #e74c3c, #c0392b); }
-        .btn-logout { background: linear-gradient(to right, #7f8c8d, #34495e); }
+a {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 25px;
+    background: #3498db;
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    transition: 0.3s;
+}
 
-        .dashboard-container { max-width: 650px; margin: 40px auto; background: white; padding: 40px; border-radius: 25px; box-shadow: 0 15px 40px rgba(0,0,0,0.1); text-align: center; border-top: 8px solid var(--primary); }
-        
-        .results-container { max-width: 900px; width: 95%; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); direction: rtl; margin: auto;}
-        .results-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        .results-table th { background: var(--primary); color: white; padding: 15px; }
-        .results-table td { padding: 12px; border-bottom: 1px solid #eee; text-align: center; font-weight: 500; }
+a:hover {
+    background: #2980b9;
+}
 
-        /* حقل الاسم المدمج */
-        .name-box { background: #f0f4f8; padding: 20px; border-radius: 10px; margin-bottom: 25px; border-right: 5px solid var(--primary); direction: rtl; text-align: right; }
-        .name-box label { font-weight: bold; color: var(--primary); margin-bottom: 8px; display: block; }
-        .name-box input { width: 100%; padding: 12px; border: 2px solid #ccc; border-radius: 8px; font-size: 1rem; box-sizing: border-box; outline: none;}
-        .name-box input:focus { border-color: var(--primary); }
+/* أيقونات متحركة */
+.lock {
+    position: absolute;
+    font-size: 30px;
+    opacity: 0.2;
+    animation: float 6s infinite;
+}
 
-        /* --- شاشة الترحيب الأصلية --- */
-        #welcome-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, var(--primary) 0%, #34495e 100%);
-            display: none; justify-content: center; align-items: center;
-            z-index: 2000; color: white; text-align: center;
-        }
-
-        .welcome-box {
-            background: white; color: var(--primary); padding: 40px; border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3); max-width: 500px; width: 90%;
-        }
-
-        .welcome-box img { max-width: 120px; margin-bottom: 20px; }
-        .welcome-box h1 { margin: 10px 0; font-size: 24px; direction: rtl; }
-        .welcome-box p { font-size: 18px; margin-bottom: 30px; }
-
-        .start-btn {
-            background: var(--accent); color: white; border: none; padding: 15px 40px;
-            font-size: 1.2rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: 0.3s;
-        }
-
-        /* --- نافذة كلمة السر --- */
-        .modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 30000;
-            justify-content: center; align-items: center;
-        }
-
-        .pw-card {
-            background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 400px;
-            text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-        }
-
-        .pw-input {
-            width: 85%; padding: 15px; font-size: 1.2rem; text-align: center;
-            border: 3px solid #ddd; border-radius: 12px; margin-bottom: 20px; outline: none; transition: 0.3s;
-        }
-
-        .pw-input.error { border-color: var(--error) !important; box-shadow: 0 0 10px rgba(231, 76, 60, 0.3); animation: shake 0.4s; }
-        .pw-input.success { border-color: var(--accent) !important; box-shadow: 0 0 10px rgba(39, 174, 96, 0.3); }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-        }
-
-        .pw-btn { padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin: 5px; }
-        .confirm-btn { background: var(--accent); color: white; }
-        .cancel-btn { background: #95a5a6; color: white; }
-
-        /* --- إخفاء الامتحان في البداية --- */
-        #exam-wrapper { display: none; }
-
-        .timer-container {
-            position: fixed; top: 20px; left: 20px; background: white; padding: 10px 20px;
-            border-radius: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); z-index: 1001;
-            border: 2px solid var(--primary); font-weight: bold; display: flex; align-items: center; gap: 10px;
-        }
-        #timer { font-size: 1.2rem; color: var(--primary); }
-        .timer-warning { border-color: var(--error) !important; animation: blink 1s infinite; }
-
-        .container {
-            max-width: 900px; margin: 0 auto; background: white; padding: 35px;
-            border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative; overflow: hidden;
-        }
-
-        .model-tag {
-            position: absolute; top: 20px; right: -35px; background: linear-gradient(135deg, #2c3e50, #34495e);
-            color: white; padding: 10px 45px; transform: rotate(45deg); font-weight: bold; font-size: 0.9rem; z-index: 10; direction: rtl;
-        }
-
-        header { text-align: center; border-bottom: 3px solid var(--primary); margin-bottom: 25px; padding-bottom: 20px; }
-        .school-logo { max-width: 110px; margin-bottom: 10px; }
-        .school-name { font-size: 26px; font-weight: bold; color: var(--primary); direction: rtl; }
-        .teacher-info { background: #f8f9fa; border: 1px solid #e9ecef; display: inline-block; padding: 8px 25px; border-radius: 50px; margin-top: 10px; }
-        .teacher-name { font-size: 1.1rem; color: #2c3e50; font-weight: bold; direction: rtl; }
-        .exam-title { font-size: 22px; color: #c0392b; margin-top: 20px; font-weight: 800; }
-
-        .section-header { background: var(--primary); color: white; padding: 14px 20px; border-radius: 8px; margin: 40px 0 20px; font-size: 1.2rem; }
-        .passage-box { background: #fff; padding: 25px; border: 1px solid #e1e4e8; border-left: 6px solid var(--primary); line-height: 1.9; margin-bottom: 30px; font-size: 1.15rem; }
-
-        .question-block { margin-bottom: 30px; padding: 20px; background: #fcfcfc; border-radius: 10px; border: 1px solid #f0f0f0; }
-        .question-text { font-weight: 700; font-size: 1.1rem; margin-bottom: 18px; display: block; color: #2c3e50; }
-        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-
-        .option-item { display: flex; align-items: center; padding: 12px 18px; border: 2px solid #edeff2; border-radius: 10px; cursor: pointer; transition: 0.2s; }
-        .option-item:hover { background: #f1f8ff; border-color: var(--primary); }
-        input[type="radio"] { margin-right: 12px; transform: scale(1.3); }
-
-        .is-correct { background: #e6ffed !important; border-color: #28a745 !important; color: #155724; font-weight: bold; }
-        .is-wrong { background: #ffeef0 !important; border-color: #dc3545 !important; color: #721c24; }
-
-        .result-sticky {
-            display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            z-index: 1000; background: #27ae60; color: white; padding: 15px 40px;
-            border-radius: 50px; font-size: 1.5rem; font-weight: bold; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border: 2px solid white;
-        }
-
-        .submit-btn, .retake-btn {
-            display: block; width: 100%; padding: 22px; border: none; border-radius: 12px;
-            font-size: 1.4rem; font-weight: bold; cursor: pointer; margin-top: 40px; transition: 0.3s;
-        }
-        .submit-btn { background: var(--primary); color: white; }
-        .retake-btn { background: #e67e22; color: white; display: none; }
-        
-        .disabled { pointer-events: none; opacity: 0.7; }
-    </style>
+@keyframes float {
+    0% {transform: translateY(0);}
+    50% {transform: translateY(-50px);}
+    100% {transform: translateY(0);}
+}
+</style>
 </head>
+
 <body>
 
-<div id="roleSelectionScreen">
-    <div class="custom-card">
-        <img src="https://i.ibb.co/dsF6pmMw/20170618225634.jpg" alt="Logo">
-        <h1 style="direction: rtl; color: var(--primary);">نظام الاختبارات الإلكتروني</h1>
-        <p style="direction: rtl;">يرجى اختيار صفتك للدخول</p>
-        <button class="admin-btn btn-results" onclick="openPwModal('teacher')">مدير النظام (الأستاذ)</button>
-        <button class="admin-btn btn-student" onclick="goToStudentWelcome()">الدخول كطالب</button>
-    </div>
+<!-- أيقونات -->
+<div class="lock" style="top:10%; left:20%;">🔒</div>
+<div class="lock" style="top:70%; left:10%;">🔒</div>
+<div class="lock" style="top:30%; right:15%;">🔒</div>
+<div class="lock" style="top:80%; right:25%;">🔒</div>
+
+<div class="container">
+    <h1>تم إغلاق الصفحة نهائيًا</h1>
+    <p>يرجى التوجه إلى الرابط الجديد:</p>
+    <a href="https://ahmadhomepc2008-arch.github.io/unit7-1/">الانتقال إلى الامتحان</a>
 </div>
 
-<div id="teacherDashboard">
-    <div class="dashboard-container">
-        <img src="https://i.ibb.co/dsF6pmMw/20170618225634.jpg" alt="Logo" style="max-width: 90px; margin-bottom: 15px;">
-        <h2 style="direction: rtl;">لوحة التحكم - الأستاذ أسامة فودة</h2>
-        <div class="btn-group">
-            <button class="admin-btn btn-results" onclick="showResultsView()">📄 عرض نتائج الطلاب</button>
-            <button class="admin-btn btn-reset" onclick="resetStudentSessions()">🔄 تصفير جلسات الطلاب</button>
-            <button class="admin-btn btn-clear" onclick="clearResultsArchive()">🗑️ مسح أرشيف النتائج</button>
-            <button class="admin-btn btn-logout" onclick="logoutToRoles()">🚪 تسجيل الخروج</button>
-        </div>
-    </div>
-</div>
 
-<div id="resultsPage">
-    <div class="results-container">
-        <div style="display:flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary); padding-bottom: 10px;">
-            <h2 style="margin:0;">قائمة نتائج الطلاب</h2>
-            <button class="admin-btn btn-logout" style="width:auto; padding: 10px 20px; margin:0;" onclick="hideResultsView()">إغلاق الرجوع</button>
-        </div>
-        <table class="results-table">
-            <thead>
-                <tr>
-                    <th>الاسم الرباعي</th>
-                    <th>الدرجة</th>
-                    <th>وقت التسليم</th>
-                </tr>
-            </thead>
-            <tbody id="resultsBody"></tbody>
-        </table>
-    </div>
-</div>
-
-<div class="modal-overlay" id="pwModal">
-    <div class="pw-card">
-        <h3 id="pwModalTitle" style="direction: rtl;">أدخل كلمة السر</h3>
-        <input type="password" id="retakePassword" class="pw-input" placeholder="كلمة السر">
-        <div style="display: flex; gap: 10px; justify-content: center;">
-            <button class="pw-btn confirm-btn" onclick="processPassword()">تأكيد</button>
-            <button class="pw-btn cancel-btn" onclick="closePwModal()">إلغاء</button>
-        </div>
-    </div>
-</div>
-
-<div id="welcome-screen">
-    <div class="welcome-box">
-        <img src="https://i.ibb.co/dsF6pmMw/20170618225634.jpg" alt="Logo">
-        <h1>مدرسة الشهيد زهاء الدين الحمود الثانوية للبنين</h1>
-        <p>مرحباً بكم في امتحان الوحدة السابعة<br>إعداد الأستاذ: أسامة فودة</p>
-        <ul style="text-align: left; display: inline-block; direction: ltr;">
-            <li>Time: 30 Minutes</li>
-            <li>Questions: 20 MCQs</li>
-        </ul>
-        <br><br>
-        <button class="start-btn" onclick="startExam()">ابدأ الامتحان الآن</button>
-    </div>
-</div>
-
-<div id="exam-wrapper">
-    <div class="timer-container" id="timerBox">
-        <span>Time Left:</span>
-        <span id="timer">--:--</span>
-    </div>
-
-    <div class="container">
-        <div class="model-tag">النموذج الثالث</div>
-        <header>
-            <img src="https://i.ibb.co/dsF6pmMw/20170618225634.jpg" alt="Logo" class="school-logo">
-            <div class="school-name">مدرسة الشهيد زهاء الدين الحمود الثانوية للبنين</div>
-            <div class="teacher-info"><span class="teacher-name">إعداد الأستاذ: أسامة فودة</span></div>
-            <div class="exam-title">Unit Seven Exam: English Language</div>
-        </header>
-
-        <div id="scoreDisplay" class="result-sticky"></div>
-
-        <form id="quizForm">
-            <div class="name-box">
-                <label>الاسم الرباعي للطالب:</label>
-                <input type="text" id="studentName" required placeholder="أدخل اسمك الكامل هنا للمتابعة">
-            </div>
-
-            <h2 class="section-header">Question One: Read the text, then answer the questions</h2>
-            <div class="passage-box">
-                In 2015, Tracy Warshal was in the queue at a busy shop during the holiday season when the man in front of her realised he’d forgotten his wallet. Tracy paid for the stranger’s milk and other items, and after thanking her and asking her name, he was on his way. She thought no more of it until a month later when she was contacted by colleagues at the cancer charity where she worked. They told her that the man, who wished to remain anonymous, wanted to donate $10,000 to the foundation in her name. As she was wearing a T-shirt with the charity’s name on it at the shop, he was able to track her down. She told reporters, ‘I’m just so excited that one small gesture made a huge difference and impact on a lot of people. I hope it makes some people think twice about doing something small to somebody.’
-            </div>
-            <div id="readingQuestionsSection"></div>
-            <h2 class="section-header">Question Two: Reported Speech Mastery</h2>
-            <div id="grammarQuestionsSection"></div>
-            
-            <button type="button" id="submitBtn" class="submit-btn" onclick="gradeQuiz()">Finish & Calculate Score</button>
-        </form>
-
-        <button type="button" id="retakeBtn" class="retake-btn" onclick="openPwModal('retake')">Retake Exam / إعادة الامتحان</button>
-    </div>
-</div>
-
-<script>
-    // --- رابط الإكسل الخاص بك ---
-    const SHEETDB_API_URL = 'https://sheetdb.io/api/v1/sa2f66q6ml1ek';
-
-    const readingData = [
-        { id: 1, q: "What prompted Tracy Warshal to pay for the stranger's items?", options: ["She knew the man personally.", "She saw the man forget his wallet.", "She was asked to pay by the shop staff.", "She wanted to advertise the charity she worked for."], ans: "B" },
-        { id: 2, q: "What items did Tracy pay for?", options: ["Milk and other items.", "Only milk.", "Groceries worth $10,000.", "The man’s entire shopping cart."], ans: "A" },
-        { id: 3, q: "How did the man express his gratitude to Tracy initially?", options: ["By donating money immediately.", "By thanking her and asking for her name.", "By giving her his wallet.", "By writing a letter to the charity."], ans: "B" },
-        { id: 4, q: "How did the man find Tracy later?", options: ["By contacting the shop directly.", "Through her social media profile.", "By noticing her T-shirt with the charity’s name.", "By asking other shoppers at the store."], ans: "C" },
-        { id: 5, q: "What did the man do to show his appreciation for Tracy’s gesture?", options: ["He gave her a $10,000 check directly.", "He anonymously donated $10,000 to her charity.", "He invited her to a charity dinner.", "He publicly announced her good deed."], ans: "B" },
-        { id: 6, q: "Why was Tracy’s gesture significant to her?", options: ["It taught her the value of charity work.", "It made her famous in her community.", "It inspired others to do small acts of kindness.", "It resulted in her promotion at work."], ans: "C" },
-        { id: 7, q: "What was Tracy’s reaction when she learned about the donation?", options: ["She was excited about the positive impact it would have.", "She felt uncomfortable about the publicity.", "She decided to repay the man.", "She was surprised that the man remembered her."], ans: "A" },
-        { id: 8, q: "Why did the man remain anonymous?", options: ["He didn’t want Tracy to feel indebted.", "He preferred to focus on the act of kindness rather than recognition.", "He was legally required to stay anonymous.", "He didn’t want the media to find him."], ans: "B" },
-        { id: 9, q: "What is the main message Tracy hopes others take from her story?", options: ["Small gestures can have a big impact.", "Charity work is rewarding.", "People should always pay it forward.", "Acts of kindness lead to financial gain."], ans: "A" },
-        { id: 10, q: "What season did this incident occur?", options: ["Summer", "Holiday season", "Spring", "Autumn"], ans: "B" }
-    ];
-
-    const grammarData = [
-        { id: 11, q: "\"I didn't go to the party.\"", options: ["She told me that she didn't go to the party.", "She told me that she doesn't go to the party.", "She told me that she hadn't gone to the party.", "She told me that she hasn't gone to the party."], ans: "C" },
-        { id: 12, q: "\"I'm coming!\"", options: ["She said that she is coming.", "She said that she was coming.", "She said that she has been coming.", "She said that she would come."], ans: "B" },
-        { id: 13, q: "\"He works in a bank.\"", options: ["She said that he works in a bank.", "She said that he worked in a bank.", "She said that he is working in a bank.", "She said that he was working in a bank."], ans: "B" },
-        { id: 14, q: "\"You should go to bed early.\"", options: ["She told me that I should go to bed early.", "She told me that you should go to bed early.", "She told me that I have to go to bed early.", "She told me that I went to bed early."], ans: "A" },
-        { id: 15, q: "\"I can help you tomorrow.\"", options: ["She said that she could help me tomorrow.", "She said that she can help me tomorrow.", "She said that she was helping me tomorrow.", "She said that she could help me the next day."], ans: "D" },
-        { id: 16, q: "\"Lucy'll come later.\"", options: ["She said that Lucy would come later.", "She said that Lucy will come later.", "She said that Lucy is coming later.", "She said that Lucy comes later."], ans: "A" },
-        { id: 17, q: "\"We went out last night.\"", options: ["She told me that they went out last night.", "She told me that they had gone out last night.", "She told me that they had gone out the night before.", "She told me that they were going out the night before."], ans: "C" },
-        { id: 18, q: "\"I was waiting for the bus when he arrived.\"", options: ["She told me that she was waiting for the bus when he arrived.", "She told me that she had been waiting for the bus when he arrived.", "She told me that she is waiting for the bus when he arrived.", "She told me that she had waited for the bus when he arrived."], ans: "B" },
-        { id: 19, q: "\"I'd never been there before.\"", options: ["She said that she never went there before.", "She said that she had never been there before.", "She said that she has never been there before.", "She said that she never was there before."], ans: "B" },
-        { id: 20, q: "\"He hasn't eaten breakfast.\"", options: ["She told me that he didn't eat breakfast.", "She told me that he hasn't eaten breakfast.", "She told me that he hadn't eaten breakfast.", "She told me that he won't eat breakfast."], ans: "C" }
-    ];
-
-    function renderQuestions(data, containerId) {
-        const container = document.getElementById(containerId);
-        container.innerHTML = "";
-        data.forEach(item => {
-            const div = document.createElement('div');
-            div.className = 'question-block';
-            div.innerHTML = `<span class="question-text">${item.id}) ${item.q}</span><div class="options-grid">${item.options.map((opt, i) => {const letter = String.fromCharCode(65 + i);return `<label class="option-item" id="label-q${item.id}-${letter}"><input type="radio" name="q${item.id}" value="${letter}"> ${letter}) ${opt}</label>`;}).join('')}</div>`;
-            container.appendChild(div);
-        });
-    }
-
-    // --- وظيفة الإرسال لـ SheetDB ---
-    async function sendToExcel(name, score, time) {
-        try {
-            await fetch(SHEETDB_API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    "data": [{ "الاسم الرباعي": name, "الدرجة": score, "وقت التسليم": time }]
-                })
-            });
-        } catch (e) { console.error("Error sending to sheet", e); }
-    }
-
-    let currentAction = "";
-    function hideAllScreens() {
-        document.getElementById('roleSelectionScreen').style.display = 'none';
-        document.getElementById('teacherDashboard').style.display = 'none';
-        document.getElementById('resultsPage').style.display = 'none';
-        document.getElementById('welcome-screen').style.display = 'none';
-        document.getElementById('exam-wrapper').style.display = 'none';
-    }
-
-    function goToStudentWelcome() { hideAllScreens(); document.getElementById('welcome-screen').style.display = 'flex'; }
-    function openPwModal(action) { currentAction = action; document.getElementById('pwModalTitle').innerText = (action === 'teacher') ? "دخول الأستاذ" : "أدخل كلمة السر للإعادة"; document.getElementById('pwModal').style.display = 'flex'; }
-    function closePwModal() { document.getElementById('pwModal').style.display = 'none'; document.getElementById('retakePassword').value = ""; }
-
-    function processPassword() {
-        const input = document.getElementById('retakePassword');
-        if (input.value === "unit7-3") {
-            input.classList.add('success');
-            setTimeout(() => {
-                closePwModal();
-                if(currentAction === 'teacher') { hideAllScreens(); document.getElementById('teacherDashboard').style.display = 'block'; }
-                else if(currentAction === 'retake') {
-                    localStorage.removeItem('examEndTime'); localStorage.removeItem('examFinished'); localStorage.removeItem('savedScore');
-                    document.getElementById('scoreDisplay').style.display = 'none';
-                    document.getElementById('quizForm').classList.remove('disabled');
-                    document.getElementById('submitBtn').style.display = 'block';
-                    document.getElementById('retakeBtn').style.display = 'none';
-                    document.getElementById('studentName').value = "";
-                    document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
-                    document.querySelectorAll('.option-item').forEach(l => l.classList.remove('is-correct', 'is-wrong'));
-                    hideAllScreens(); document.getElementById('roleSelectionScreen').style.display = 'flex';
-                }
-                input.classList.remove('success');
-            }, 600);
-        } else { input.classList.add('error'); setTimeout(() => { input.classList.remove('error'); input.value = ""; }, 1000); }
-    }
-
-    function logoutToRoles() { hideAllScreens(); document.getElementById('roleSelectionScreen').style.display = 'flex'; }
-    function showResultsView() {
-        const data = JSON.parse(localStorage.getItem('studentResults') || '[]');
-        document.getElementById('resultsBody').innerHTML = data.map(r => `<tr><td>${r.name}</td><td>${r.score}/20</td><td>${r.time}</td></tr>`).join('');
-        document.getElementById('teacherDashboard').style.display = 'none';
-        document.getElementById('resultsPage').style.display = 'flex';
-    }
-    function hideResultsView() { document.getElementById('resultsPage').style.display = 'none'; document.getElementById('teacherDashboard').style.display = 'block'; }
-    function resetStudentSessions() { localStorage.removeItem('examEndTime'); localStorage.removeItem('examFinished'); alert("تم تصفير جلسات الطلاب."); }
-    function clearResultsArchive() { if(confirm("هل أنت متأكد؟")) { localStorage.removeItem('studentResults'); showResultsView(); } }
-
-    let countdown;
-    const EXAM_MINUTES = 30;
-
-    function startExam() {
-        document.getElementById('welcome-screen').style.display = 'none';
-        document.getElementById('exam-wrapper').style.display = 'block';
-        let endTime = localStorage.getItem('examEndTime') || (Date.now() + (EXAM_MINUTES * 60 * 1000));
-        localStorage.setItem('examEndTime', endTime);
-        runTimer(endTime);
-    }
-
-    function runTimer(endTime) {
-        const timerDisplay = document.getElementById('timer');
-        clearInterval(countdown);
-        countdown = setInterval(() => {
-            const difference = endTime - Date.now();
-            if (difference <= 0) { clearInterval(countdown); timerDisplay.innerHTML = "00:00"; if (!localStorage.getItem('examFinished')) gradeQuiz(true); return; }
-            const minutes = Math.floor(difference / 60000);
-            const seconds = Math.floor((difference % 60000) / 1000);
-            timerDisplay.innerHTML = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-        }, 1000);
-    }
-
-    function gradeQuiz(isTimeUp = false) {
-        const studentName = document.getElementById('studentName').value.trim();
-        if (!studentName && !localStorage.getItem('examFinished') && !isTimeUp) { alert("أدخل الاسم أولاً!"); return; }
-
-        clearInterval(countdown);
-        let score = 0;
-        const allQuestions = [...readingData, ...grammarData];
-        document.getElementById('quizForm').classList.add('disabled');
-        document.getElementById('submitBtn').style.display = 'none';
-        document.getElementById('retakeBtn').style.display = 'block';
-
-        allQuestions.forEach(item => {
-            const selected = document.querySelector(`input[name="q${item.id}"]:checked`);
-            const correctLetter = item.ans;
-            if (selected) {
-                if (selected.value === correctLetter) { score++; document.getElementById(`label-q${item.id}-${selected.value}`).classList.add('is-correct'); }
-                else { document.getElementById(`label-q${item.id}-${selected.value}`).classList.add('is-wrong'); document.getElementById(`label-q${item.id}-${correctLetter}`).classList.add('is-correct'); }
-            } else { document.getElementById(`label-q${item.id}-${correctLetter}`).classList.add('is-correct'); }
-        });
-
-        if (!localStorage.getItem('examFinished')) {
-            const timeStr = new Date().toLocaleString('ar-EG');
-            const finalName = studentName || "انتهى الوقت";
-            const archive = JSON.parse(localStorage.getItem('studentResults') || '[]');
-            archive.push({ name: finalName, score: score, time: timeStr });
-            localStorage.setItem('studentResults', JSON.stringify(archive));
-            localStorage.setItem('examFinished', 'true');
-            localStorage.setItem('savedScore', score);
-            // إرسال البيانات للإكسل
-            sendToExcel(finalName, score, timeStr);
-        }
-        showScore(localStorage.getItem('savedScore'));
-    }
-
-    function showScore(score) {
-        const scoreDiv = document.getElementById('scoreDisplay');
-        scoreDiv.style.display = 'block';
-        scoreDiv.innerHTML = `Final Score: ${score} / 20`;
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    window.onload = () => {
-        renderQuestions(readingData, 'readingQuestionsSection');
-        renderQuestions(grammarData, 'grammarQuestionsSection');
-        if (localStorage.getItem('examFinished') === 'true') { hideAllScreens(); document.getElementById('exam-wrapper').style.display = 'block'; gradeQuiz(); }
-        else if (localStorage.getItem('examEndTime')) { hideAllScreens(); startExam(); }
-        else { hideAllScreens(); document.getElementById('roleSelectionScreen').style.display = 'flex'; }
-    };
 </script>
+
 </body>
 </html>
